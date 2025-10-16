@@ -1,196 +1,343 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gang Manager – BadDuck Family</title>
-  <style>
-    body {
-      font-family: 'Kanit', sans-serif;
-      background: #fffaf9;
-      margin: 0;
-      color: #333;
-    }
-    header {
-      background: linear-gradient(90deg, #ffb6c1, #fcd8b6);
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #4a2f2f;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      background: #fff2f4;
-      border-bottom: 2px solid #ffd5e0;
-      flex-wrap: wrap;
-    }
-    nav button {
-      margin: 5px;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      background: #ffe1ec;
-      color: #6b3c47;
-      font-weight: 600;
-    }
-    nav button.active {
-      background: #ff91a4;
-      color: white;
-    }
-    main {
-      padding: 1rem;
-      text-align: center;
-    }
-    section { display: none; }
-    section.active { display: block; }
-    input, textarea {
-      width: 90%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      margin: 5px 0;
-    }
-    .btn {
-      background: #ff9bb5;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 16px;
-      margin-top: 8px;
-      cursor: pointer;
-    }
-    .btn:hover { background: #ff7a9a; }
-    .list-item {
-      background: #fff;
-      border: 1px solid #ffcad4;
-      border-radius: 8px;
-      padding: 10px;
-      margin: 5px auto;
-      width: 90%;
-      box-shadow: 0 2px 3px rgba(0,0,0,0.05);
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BadDuck Gang Manager</title>
+<style>
+/* ===== Cute Pastel Theme (mobile-first) ===== */
+:root{
+  --bg:#fffaf5; --card:#ffffff; --soft:#ffe7ef;
+  --text:#563a32; --muted:#9a7a71;
+  --prim:#ff9bb5; --accent:#ffd38d; --ok:#3fb984; --warn:#ffb84d; --danger:#ff6b6b;
+  --bd:1px solid rgba(0,0,0,.08); --shadow:0 8px 24px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans Thai',sans-serif}
+.appbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(90deg,#ffc3d2,#ffe0b8);box-shadow:var(--shadow)}
+.appbar b{letter-spacing:.2px}
+.icon{border:0;background:transparent;padding:6px;border-radius:10px}
+.icon:active{transform:scale(.98)}
+.container{padding:14px}
+.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--card);box-shadow:var(--shadow);padding:6px 6px env(safe-area-inset-bottom)}
+.tabs button{border:0;background:transparent;padding:10px 6px;border-radius:10px;color:var(--muted);font-weight:600}
+.tabs button.active{background:var(--soft);color:var(--text)}
+.view{display:none;padding:8px 0 86px}
+.view.active{display:block}
+.card{background:var(--card);border:var(--bd);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.h{font-weight:800;margin:6px 0 10px}
+.small{color:var(--muted);font-size:.9rem}
+.row{display:grid;gap:8px}
+.grid2{grid-template-columns:1fr 1fr}
+input,textarea,select{width:100%;padding:10px 12px;border-radius:12px;border:var(--bd);background:#fff}
+.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:700}
+.btn-primary{background:var(--prim);color:#fff}
+.btn-soft{background:var(--soft)}
+.btn-danger{background:var(--danger);color:#fff}
+.list{list-style:none;margin:0;padding:0}
+.item{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:var(--bd)}
+.badge{padding:4px 10px;border-radius:999px;background:#f3f4f6}
+.badge.ok{background:#e8fff3;color:#0f5132}
+.badge.warn{background:#fff4e0;color:#7a4d00}
+.badge.danger{background:#ffe8ea;color:#8a2330}
+.fab{position:fixed;right:16px;bottom:78px;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);box-shadow:var(--shadow);font-size:22px;font-weight:900;color:#4b2d1b}
+.kv{display:grid;grid-template-columns:1fr auto;gap:8px}
+code.inline{background:#fff;border:var(--bd);padding:2px 6px;border-radius:8px}
+@media(min-width:720px){.container{max-width:920px;margin:0 auto}}
+</style>
 </head>
 <body>
 
-<header>🦆 ระบบจัดการแก๊ง BadDuck Family</header>
+<header class="appbar">
+  <b>🦆 BadDuck Family Manager</b>
+  <div>
+    <button class="icon" id="exportBtn" title="สำรองข้อมูล">📤</button>
+    <button class="icon" id="importBtn" title="กู้คืนข้อมูล">📥</button>
+    <button class="icon" id="resetBtn" title="รีเซ็ตข้อมูล">↺</button>
+  </div>
+</header>
 
-<nav>
-  <button class="active" onclick="showTab('members')">สมาชิก</button>
-  <button onclick="showTab('finance')">การเงิน</button>
-  <button onclick="showTab('activity')">กิจกรรม</button>
-  <button onclick="showTab('leave')">การลา</button>
-  <button onclick="resetAll()">รีเซ็ตข้อมูล</button>
-</nav>
+<main class="container">
+  <!-- Dashboard -->
+  <section id="v-dash" class="view active">
+    <div class="card">
+      <div class="h">ภาพรวม</div>
+      <div class="row grid2">
+        <div class="card">
+          <div class="small">สมาชิกทั้งหมด</div>
+          <div id="statMembers" style="font-size:1.6rem;font-weight:800">0</div>
+        </div>
+        <div class="card">
+          <div class="small">คงเหลือกองกลาง</div>
+          <div id="statBalance" style="font-size:1.6rem;font-weight:800">฿ 0</div>
+        </div>
+      </div>
+      <div class="small">รอบส่งเงินปัจจุบัน: <span id="currentPeriod"></span> · ค่าปรับขาดกิจกรรม: <span id="fineAbsent"></span>฿</div>
+    </div>
 
-<main>
-  <!-- สมาชิก -->
-  <section id="members" class="active">
-    <h2>รายชื่อสมาชิก</h2>
-    <div id="memberList"></div>
-    <input type="text" id="memberName" placeholder="ชื่อสมาชิก">
-    <button class="btn" onclick="addMember()">เพิ่มสมาชิก</button>
+    <div class="card">
+      <div class="h">กิจกรรมถัดไป</div>
+      <ul class="list" id="nextActs"></ul>
+    </div>
   </section>
 
-  <!-- การเงิน -->
-  <section id="finance">
-    <h2>ระบบการเงิน</h2>
-    <div id="financeList"></div>
-    <input type="text" id="desc" placeholder="รายละเอียด">
-    <input type="number" id="amount" placeholder="จำนวนเงิน (+/-)">
-    <button class="btn" onclick="addFinance()">บันทึกรายการ</button>
-    <h3>ยอดคงเหลือ: <span id="balance">0</span> บาท</h3>
+  <!-- Members -->
+  <section id="v-members" class="view">
+    <div class="card">
+      <div class="h">สมาชิก</div>
+      <div class="row grid2">
+        <input id="mName" placeholder="ชื่อ">
+        <select id="mHouse">
+          <option value="">บ้าน (ไม่ระบุ)</option>
+          <option>บ้าน A</option><option>บ้าน B</option><option>บ้าน C</option>
+        </select>
+      </div>
+      <div class="row grid2">
+        <input id="mDiscord" placeholder="Discord ID (ไม่บังคับ)">
+        <select id="mRole"><option value="member">สมาชิก</option><option value="leader">หัวหน้าบ้าน</option><option value="admin">แอดมิน</option></select>
+      </div>
+      <button class="btn btn-primary" id="addMember">เพิ่มสมาชิก</button>
+    </div>
+
+    <div class="card">
+      <div class="kv"><div class="h">รายชื่อ</div><div class="small"><span class="badge" id="memberCount">0</span></div></div>
+      <ul class="list" id="memberList"></ul>
+    </div>
   </section>
 
-  <!-- กิจกรรม -->
-  <section id="activity">
-    <h2>กิจกรรมแก๊ง</h2>
-    <div id="activityList"></div>
-    <input type="text" id="actName" placeholder="ชื่อกิจกรรม">
-    <button class="btn" onclick="addActivity()">เพิ่มกิจกรรม</button>
+  <!-- Activities -->
+  <section id="v-acts" class="view">
+    <div class="card">
+      <div class="h">สร้างกิจกรรม</div>
+      <div class="row grid2">
+        <input id="aName" placeholder="ชื่อกิจกรรม">
+        <input id="aTime" type="datetime-local">
+      </div>
+      <label class="small"><input type="checkbox" id="aRequired" checked> บังคับเข้าร่วม (ไม่มาโดนปรับ)</label>
+      <button class="btn btn-primary" id="addAct">เพิ่มกิจกรรม</button>
+    </div>
+
+    <div class="card">
+      <div class="h">รายการ + เช็คชื่อ</div>
+      <ul class="list" id="actList"></ul>
+    </div>
   </section>
 
-  <!-- การลา -->
-  <section id="leave">
-    <h2>คำขอลา</h2>
-    <div id="leaveList"></div>
-    <input type="text" id="leaveName" placeholder="ชื่อคนลา">
-    <textarea id="leaveReason" placeholder="เหตุผลการลา"></textarea>
-    <button class="btn" onclick="addLeave()">ส่งคำขอลา</button>
+  <!-- Finance -->
+  <section id="v-fin" class="view">
+    <div class="card">
+      <div class="h">บันทึกรายการเงิน</div>
+      <div class="row grid2">
+        <input id="fDesc" placeholder="รายละเอียด (เช่น ค่าบ้าน / บริจาค)">
+        <input id="fAmount" type="number" step="0.01" placeholder="จำนวน (+/-)">
+      </div>
+      <select id="fMember"></select>
+      <button class="btn btn-primary" id="addFin">บันทึก</button>
+    </div>
+
+    <div class="card">
+      <div class="kv"><div class="h">รายการ</div><div class="small">คงเหลือ: <b id="finBalance">฿ 0</b></div></div>
+      <ul class="list" id="finList"></ul>
+    </div>
+  </section>
+
+  <!-- Leave -->
+  <section id="v-leave" class="view">
+    <div class="card">
+      <div class="h">ขออนุญาตลา</div>
+      <select id="lMember"></select>
+      <div class="row"><textarea id="lReason" rows="3" placeholder="เหตุผลการลา"></textarea></div>
+      <button class="btn btn-primary" id="addLeave">ส่งคำขอ</button>
+    </div>
+
+    <div class="card">
+      <div class="h">ประวัติคำขอ</div>
+      <ul class="list" id="leaveList"></ul>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section id="v-settings" class="view">
+    <div class="card">
+      <div class="h">ตั้งค่าระบบ</div>
+      <div class="row grid2">
+        <div><div class="small">รอบส่งเงิน (YYYY-MM)</div><input id="sPeriod" placeholder="2025-10"></div>
+        <div><div class="small">ค่าปรับขาดกิจกรรม/ครั้ง (฿)</div><input id="sFineAbsent" type="number" value="50"></div>
+      </div>
+      <button class="btn btn-primary" id="saveSettings">บันทึกการตั้งค่า</button>
+      <div class="small">หมายเหตุ: รุ่นนี้เป็นสแตติก เก็บข้อมูลในเครื่องผ่าน <code class="inline">localStorage</code></div>
+    </div>
   </section>
 </main>
 
+<!-- Bottom Tabs -->
+<nav class="tabs" role="tablist">
+  <button data-target="v-dash" class="active">ภาพรวม</button>
+  <button data-target="v-members">สมาชิก</button>
+  <button data-target="v-acts">กิจกรรม</button>
+  <button data-target="v-fin">การเงิน</button>
+  <button data-target="v-leave">ลา</button>
+  <button data-target="v-settings">ตั้งค่า</button>
+</nav>
+
+<button class="fab" id="quickAdd" title="เพิ่มเร็ว">＋</button>
+
 <script>
-function showTab(tabName) {
-  document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
-  document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-  event.target.classList.add("active");
-  document.getElementById(tabName).classList.add("active");
-  saveData();
+/* ===== Simple store (localStorage) ===== */
+const empty = { members:[], acts:[], attend:[], ledger:[], leaves:[], settings:{ period:ym(), fineAbsent:50 } };
+let db = load();
+
+function load(){ try{ return JSON.parse(localStorage.getItem('bd_gang')) || structuredClone(empty);}catch(e){return structuredClone(empty);} }
+function save(){ localStorage.setItem('bd_gang', JSON.stringify(db)); renderAll(); }
+
+/* ===== Helpers ===== */
+function ym(d=new Date()){ return d.toISOString().slice(0,7); }
+const $ = s=>document.querySelector(s);
+const $$ = s=>document.querySelectorAll(s);
+
+/* ===== Tabs ===== */
+$$('.tabs button').forEach(btn=>{
+  btn.onclick=()=>{ $$('.tabs button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+    $$('.view').forEach(v=>v.classList.remove('active')); $('#'+btn.dataset.target).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+
+/* ===== Actions: Members ===== */
+$('#addMember').onclick=()=>{
+  const name=$('#mName').value.trim(); const house=$('#mHouse').value; const discord=$('#mDiscord').value.trim(); const role=$('#mRole').value;
+  if(!name) return alert('กรอกชื่อสมาชิก');
+  const id=crypto.randomUUID();
+  db.members.push({id,name,house,discord,role,createdAt:Date.now()});
+  $('#mName').value=''; $('#mDiscord').value=''; save();
+};
+function removeMember(id){
+  if(!confirm('ลบสมาชิกนี้?')) return;
+  db.members=db.members.filter(m=>m.id!==id);
+  db.ledger=db.ledger.filter(x=>x.userId!==id);
+  db.attend=db.attend.filter(x=>x.userId!==id);
+  db.leaves=db.leaves.filter(x=>x.userId!==id);
+  save();
 }
 
-let data = JSON.parse(localStorage.getItem("gangData") || '{"members":[],"finance":[],"activity":[],"leave":[]}');
-
-function render() {
-  document.getElementById("memberList").innerHTML = data.members.map((m,i)=>`<div class='list-item'>${i+1}. ${m}</div>`).join('');
-  document.getElementById("financeList").innerHTML = data.finance.map(f=>`<div class='list-item'>${f.desc} : ${f.amount}฿</div>`).join('');
-  document.getElementById("activityList").innerHTML = data.activity.map(a=>`<div class='list-item'>${a}</div>`).join('');
-  document.getElementById("leaveList").innerHTML = data.leave.map(l=>`<div class='list-item'><b>${l.name}</b>: ${l.reason}</div>`).join('');
-  let sum = data.finance.reduce((a,b)=>a+Number(b.amount),0);
-  document.getElementById("balance").innerText = sum;
-}
-
-function addMember(){
-  const name=document.getElementById("memberName").value.trim();
-  if(!name) return;
-  data.members.push(name);
-  document.getElementById("memberName").value="";
-  saveData();
-}
-
-function addFinance(){
-  const desc=document.getElementById("desc").value.trim();
-  const amount=parseFloat(document.getElementById("amount").value);
-  if(!desc || isNaN(amount)) return;
-  data.finance.push({desc,amount});
-  document.getElementById("desc").value="";
-  document.getElementById("amount").value="";
-  saveData();
-}
-
-function addActivity(){
-  const name=document.getElementById("actName").value.trim();
-  if(!name) return;
-  data.activity.push(name);
-  document.getElementById("actName").value="";
-  saveData();
-}
-
-function addLeave(){
-  const name=document.getElementById("leaveName").value.trim();
-  const reason=document.getElementById("leaveReason").value.trim();
-  if(!name || !reason) return;
-  data.leave.push({name,reason});
-  document.getElementById("leaveName").value="";
-  document.getElementById("leaveReason").value="";
-  saveData();
-}
-
-function resetAll(){
-  if(confirm("ต้องการรีเซ็ตข้อมูลทั้งหมดหรือไม่?")){
-    data={members:[],finance:[],activity:[],leave:[]};
-    saveData();
+/* ===== Activities & Attendance ===== */
+$('#addAct').onclick=()=>{
+  const name=$('#aName').value.trim(); const ts=$('#aTime').value; const req=$('#aRequired').checked;
+  if(!name||!ts) return alert('กรอกชื่อและเวลา');
+  const id=crypto.randomUUID();
+  db.acts.push({id,name,at:ts,required:req});
+  $('#aName').value=''; $('#aTime').value=''; save();
+};
+function markAttendance(actId,userId,status){
+  const key = db.attend.find(a=>a.actId===actId && a.userId===userId);
+  if(key){ key.status=status; } else { db.attend.push({id:crypto.randomUUID(),actId,userId,status,at:Date.now()}); }
+  // Auto fine on ABSENT if required
+  const act=db.acts.find(a=>a.id===actId);
+  if(status==='absent' && act?.required){
+    const amount=Number(db.settings.fineAbsent||50);
+    db.ledger.push({id:crypto.randomUUID(),type:'fine',userId,amount:-Math.abs(amount),memo:`ค่าปรับไม่เข้าร่วม ${act.name}`,at:Date.now()});
   }
+  save();
 }
 
-function saveData(){
-  localStorage.setItem("gangData",JSON.stringify(data));
-  render();
+/* ===== Finance ===== */
+$('#addFin').onclick=()=>{
+  const desc=$('#fDesc').value.trim(); const amt=parseFloat($('#fAmount').value); const uid=$('#fMember').value||null;
+  if(!desc || isNaN(amt)) return alert('กรอกรายการและจำนวน');
+  db.ledger.push({id:crypto.randomUUID(),type:amt>=0?'income':'expense',userId:uid,amount:amt,memo:desc,at:Date.now(),period:db.settings.period});
+  $('#fDesc').value=''; $('#fAmount').value=''; save();
+};
+
+/* ===== Leave ===== */
+$('#addLeave').onclick=()=>{
+  const uid=$('#lMember').value; const reason=$('#lReason').value.trim();
+  if(!uid||!reason) return alert('เลือกสมาชิกและใส่เหตุผล');
+  db.leaves.push({id:crypto.randomUUID(),userId:uid,reason,status:'pending',at:Date.now()});
+  $('#lReason').value=''; save();
+};
+
+/* ===== Settings ===== */
+$('#saveSettings').onclick=()=>{
+  db.settings.period=$('#sPeriod').value||ym();
+  db.settings.fineAbsent=Number($('#sFineAbsent').value||50);
+  save();
+};
+
+/* ===== Export / Import / Reset ===== */
+$('#exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='badduck_backup.json'; a.click();
+};
+$('#importBtn').onclick=async()=>{
+  const i=document.createElement('input'); i.type='file'; i.accept='application/json';
+  i.onchange=async()=>{ const f=i.files[0]; if(!f) return;
+    const t=await f.text(); try{ db=JSON.parse(t); save(); alert('กู้คืนข้อมูลแล้ว'); }catch(e){ alert('ไฟล์ไม่ถูกต้อง'); }
+  }; i.click();
+};
+$('#resetBtn').onclick=()=>{
+  if(confirm('รีเซ็ตข้อมูลทั้งหมด?')){ db=structuredClone(empty); save(); }
+};
+
+/* ===== Render ===== */
+function renderMembers(){
+  $('#memberCount').textContent=db.members.length;
+  const list=db.members.map(m=>`<li class="item"><div><b>${m.name}</b><div class="small">${m.house||'—'} · ${m.role}${m.discord?` · DC:${m.discord}`:''}</div></div><div><button class="btn btn-soft" onclick="removeMember('${m.id}')">ลบ</button></div></li>`).join('') || '<div class="small">ยังไม่มีสมาชิก</div>';
+  $('#memberList').innerHTML=list;
+  // selects
+  const opts = '<option value="">(ไม่ระบุ)</option>'+ db.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+  $('#fMember').innerHTML=opts; $('#lMember').innerHTML=opts;
 }
-render();
+function renderActs(){
+  const byTime=[...db.acts].sort((a,b)=>a.at.localeCompare(b.at));
+  $('#actList').innerHTML = byTime.map(a=>{
+    const rows=db.members.map(m=>{
+      const rec=db.attend.find(x=>x.actId===a.id && x.userId===m.id)?.status||'-';
+      const chip = rec==='present' ? 'ok' : rec==='late' ? 'warn' : rec==='absent' ? 'danger' : '';
+      return `<div class="item"><div>${m.name}</div><div class="small"><span class="badge ${chip}">${rec}</span></div>
+      <div>
+        <button class="btn btn-soft" onclick="markAttendance('${a.id}','${m.id}','present')">มา</button>
+        <button class="btn btn-soft" onclick="markAttendance('${a.id}','${m.id}','late')">สาย</button>
+        <button class="btn btn-soft" onclick="markAttendance('${a.id}','${m.id}','absent')">ขาด</button>
+      </div></div>`;
+    }).join('');
+    return `<li class="card"><div class="kv"><div><b>${a.name}</b><div class="small">${a.at.replace('T',' ')}</div></div><div>${a.required?'<span class="badge warn">บังคับ</span>':''}</div></div>${rows}</li>`;
+  }).join('') || '<div class="small">ยังไม่มีกิจกรรม</div>';
+
+  // next on dashboard
+  $('#nextActs').innerHTML = byTime.slice(0,3).map(a=>`<li class="item"><div><b>${a.name}</b><div class="small">${a.at.replace('T',' ')}</div></div><div>${a.required?'<span class="badge warn">บังคับ</span>':''}</div></li>`).join('') || '<div class="small">—</div>';
+}
+function renderFinance(){
+  const rows = db.ledger.map(x=>{
+    const sign = x.amount>=0? 'ok':'danger';
+    const who = x.userId ? (db.members.find(m=>m.id===x.userId)?.name || '—') : '—';
+    return `<li class="item"><div><b>${x.memo}</b><div class="small">${new Date(x.at).toLocaleString()} · ${who}</div></div><div class="badge ${sign}">${x.amount>=0?'+':''}${x.amount}</div></li>`;
+  }).join('') || '<div class="small">ยังไม่มีรายการ</div>';
+  $('#finList').innerHTML=rows;
+  const bal = db.ledger.reduce((s,x)=>s+Number(x.amount||0),0);
+  $('#finBalance').textContent='฿ '+bal.toFixed(2);
+  $('#statBalance').textContent='฿ '+bal.toFixed(2);
+}
+function renderLeaves(){
+  $('#leaveList').innerHTML = db.leaves.map(l=>{
+    const name=db.members.find(m=>m.id===l.userId)?.name||'—';
+    return `<li class="item"><div><b>${name}</b><div class="small">${l.reason}</div></div><div class="badge">${l.status}</div></li>`;
+  }).join('') || '<div class="small">ยังไม่มีคำขอ</div>';
+}
+function renderSettings(){
+  $('#sPeriod').value=db.settings.period||ym();
+  $('#sFineAbsent').value=db.settings.fineAbsent||50;
+  $('#currentPeriod').textContent=db.settings.period||ym();
+  $('#fineAbsent').textContent=db.settings.fineAbsent||50;
+}
+function renderAll(){ renderMembers(); renderActs(); renderFinance(); renderLeaves(); renderSettings(); $('#statMembers').textContent=db.members.length; }
+renderAll();
+
+/* ===== Quick Add FAB: เปิดหน้าเพิ่มสมาชิก/กิจกรรมตามแท็บ ===== */
+$('#quickAdd').onclick=()=>{
+  if($('#v-members').classList.contains('active')) $('#mName').focus();
+  else if($('#v-acts').classList.contains('active')) $('#aName').focus();
+  else if($('#v-fin').classList.contains('active')) $('#fDesc').focus();
+  else if($('#v-leave').classList.contains('active')) $('#lReason').focus();
+  else { $$('.tabs button')[1].click(); $('#mName').focus(); }
+};
 </script>
-
 </body>
 </html>
