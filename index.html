@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gang Manager – BadDuck Family</title>
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: #fffaf9;
+      margin: 0;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #ffb6c1, #fcd8b6);
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #4a2f2f;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #fff2f4;
+      border-bottom: 2px solid #ffd5e0;
+      flex-wrap: wrap;
+    }
+    nav button {
+      margin: 5px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #ffe1ec;
+      color: #6b3c47;
+      font-weight: 600;
+    }
+    nav button.active {
+      background: #ff91a4;
+      color: white;
+    }
+    main {
+      padding: 1rem;
+      text-align: center;
+    }
+    section { display: none; }
+    section.active { display: block; }
+    input, textarea {
+      width: 90%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      margin: 5px 0;
+    }
+    .btn {
+      background: #ff9bb5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+    .btn:hover { background: #ff7a9a; }
+    .list-item {
+      background: #fff;
+      border: 1px solid #ffcad4;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 5px auto;
+      width: 90%;
+      box-shadow: 0 2px 3px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<header>🦆 ระบบจัดการแก๊ง BadDuck Family</header>
+
+<nav>
+  <button class="active" onclick="showTab('members')">สมาชิก</button>
+  <button onclick="showTab('finance')">การเงิน</button>
+  <button onclick="showTab('activity')">กิจกรรม</button>
+  <button onclick="showTab('leave')">การลา</button>
+  <button onclick="resetAll()">รีเซ็ตข้อมูล</button>
+</nav>
+
+<main>
+  <!-- สมาชิก -->
+  <section id="members" class="active">
+    <h2>รายชื่อสมาชิก</h2>
+    <div id="memberList"></div>
+    <input type="text" id="memberName" placeholder="ชื่อสมาชิก">
+    <button class="btn" onclick="addMember()">เพิ่มสมาชิก</button>
+  </section>
+
+  <!-- การเงิน -->
+  <section id="finance">
+    <h2>ระบบการเงิน</h2>
+    <div id="financeList"></div>
+    <input type="text" id="desc" placeholder="รายละเอียด">
+    <input type="number" id="amount" placeholder="จำนวนเงิน (+/-)">
+    <button class="btn" onclick="addFinance()">บันทึกรายการ</button>
+    <h3>ยอดคงเหลือ: <span id="balance">0</span> บาท</h3>
+  </section>
+
+  <!-- กิจกรรม -->
+  <section id="activity">
+    <h2>กิจกรรมแก๊ง</h2>
+    <div id="activityList"></div>
+    <input type="text" id="actName" placeholder="ชื่อกิจกรรม">
+    <button class="btn" onclick="addActivity()">เพิ่มกิจกรรม</button>
+  </section>
+
+  <!-- การลา -->
+  <section id="leave">
+    <h2>คำขอลา</h2>
+    <div id="leaveList"></div>
+    <input type="text" id="leaveName" placeholder="ชื่อคนลา">
+    <textarea id="leaveReason" placeholder="เหตุผลการลา"></textarea>
+    <button class="btn" onclick="addLeave()">ส่งคำขอลา</button>
+  </section>
+</main>
+
+<script>
+function showTab(tabName) {
+  document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+  event.target.classList.add("active");
+  document.getElementById(tabName).classList.add("active");
+  saveData();
+}
+
+let data = JSON.parse(localStorage.getItem("gangData") || '{"members":[],"finance":[],"activity":[],"leave":[]}');
+
+function render() {
+  document.getElementById("memberList").innerHTML = data.members.map((m,i)=>`<div class='list-item'>${i+1}. ${m}</div>`).join('');
+  document.getElementById("financeList").innerHTML = data.finance.map(f=>`<div class='list-item'>${f.desc} : ${f.amount}฿</div>`).join('');
+  document.getElementById("activityList").innerHTML = data.activity.map(a=>`<div class='list-item'>${a}</div>`).join('');
+  document.getElementById("leaveList").innerHTML = data.leave.map(l=>`<div class='list-item'><b>${l.name}</b>: ${l.reason}</div>`).join('');
+  let sum = data.finance.reduce((a,b)=>a+Number(b.amount),0);
+  document.getElementById("balance").innerText = sum;
+}
+
+function addMember(){
+  const name=document.getElementById("memberName").value.trim();
+  if(!name) return;
+  data.members.push(name);
+  document.getElementById("memberName").value="";
+  saveData();
+}
+
+function addFinance(){
+  const desc=document.getElementById("desc").value.trim();
+  const amount=parseFloat(document.getElementById("amount").value);
+  if(!desc || isNaN(amount)) return;
+  data.finance.push({desc,amount});
+  document.getElementById("desc").value="";
+  document.getElementById("amount").value="";
+  saveData();
+}
+
+function addActivity(){
+  const name=document.getElementById("actName").value.trim();
+  if(!name) return;
+  data.activity.push(name);
+  document.getElementById("actName").value="";
+  saveData();
+}
+
+function addLeave(){
+  const name=document.getElementById("leaveName").value.trim();
+  const reason=document.getElementById("leaveReason").value.trim();
+  if(!name || !reason) return;
+  data.leave.push({name,reason});
+  document.getElementById("leaveName").value="";
+  document.getElementById("leaveReason").value="";
+  saveData();
+}
+
+function resetAll(){
+  if(confirm("ต้องการรีเซ็ตข้อมูลทั้งหมดหรือไม่?")){
+    data={members:[],finance:[],activity:[],leave:[]};
+    saveData();
+  }
+}
+
+function saveData(){
+  localStorage.setItem("gangData",JSON.stringify(data));
+  render();
+}
+render();
+</script>
+
+</body>
+</html>
