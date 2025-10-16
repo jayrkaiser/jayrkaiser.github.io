@@ -3,341 +3,477 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>BadDuck Gang Manager</title>
+<title>BadDuck Gang — Live (Supabase)</title>
 <style>
-/* ===== Cute Pastel Theme (mobile-first) ===== */
-:root{
-  --bg:#fffaf5; --card:#ffffff; --soft:#ffe7ef;
-  --text:#563a32; --muted:#9a7a71;
-  --prim:#ff9bb5; --accent:#ffd38d; --ok:#3fb984; --warn:#ffb84d; --danger:#ff6b6b;
-  --bd:1px solid rgba(0,0,0,.08); --shadow:0 8px 24px rgba(0,0,0,.06);
-}
-*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans Thai',sans-serif}
-.appbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(90deg,#ffc3d2,#ffe0b8);box-shadow:var(--shadow)}
-.appbar b{letter-spacing:.2px}
-.icon{border:0;background:transparent;padding:6px;border-radius:10px}
-.icon:active{transform:scale(.98)}
-.container{padding:14px}
-.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--card);box-shadow:var(--shadow);padding:6px 6px env(safe-area-inset-bottom)}
-.tabs button{border:0;background:transparent;padding:10px 6px;border-radius:10px;color:var(--muted);font-weight:600}
-.tabs button.active{background:var(--soft);color:var(--text)}
-.view{display:none;padding:8px 0 86px}
-.view.active{display:block}
+:root{--bg:#fffaf5;--card:#fff;--soft:#ffe7ef;--text:#563a32;--muted:#9a7a71;--prim:#ff9bb5;--accent:#ffd38d;--ok:#3fb984;--warn:#ffb84d;--danger:#ff6b6b;--bd:1px solid rgba(0,0,0,.08);--shadow:0 8px 24px rgba(0,0,0,.06)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans Thai',sans-serif}
+.appbar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(90deg,#ffc3d2,#ffe0b8);box-shadow:var(--shadow)}
+.container{padding:14px;max-width:1000px;margin:0 auto}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+nav.tabs button{border:0;background:var(--soft);color:var(--text);padding:8px 12px;border-radius:999px}
+nav.tabs button.active{background:#ffd8c0}
+.view{display:none}.view.active{display:block}
 .card{background:var(--card);border:var(--bd);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
-.h{font-weight:800;margin:6px 0 10px}
-.small{color:var(--muted);font-size:.9rem}
-.row{display:grid;gap:8px}
-.grid2{grid-template-columns:1fr 1fr}
-input,textarea,select{width:100%;padding:10px 12px;border-radius:12px;border:var(--bd);background:#fff}
-.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:700}
-.btn-primary{background:var(--prim);color:#fff}
-.btn-soft{background:var(--soft)}
-.btn-danger{background:var(--danger);color:#fff}
-.list{list-style:none;margin:0;padding:0}
-.item{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:var(--bd)}
+.h{font-weight:800;margin:6px 0 10px}.small{color:var(--muted);font-size:.9rem}
+.row{display:grid;gap:10px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:var(--bd);background:#fff}
+.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--prim);color:#fff}.btn-soft{background:var(--soft)}.btn-danger{background:var(--danger);color:#fff}
+.list{list-style:none;margin:0;padding:0}.item{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:var(--bd)}
 .badge{padding:4px 10px;border-radius:999px;background:#f3f4f6}
-.badge.ok{background:#e8fff3;color:#0f5132}
-.badge.warn{background:#fff4e0;color:#7a4d00}
-.badge.danger{background:#ffe8ea;color:#8a2330}
-.fab{position:fixed;right:16px;bottom:78px;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);box-shadow:var(--shadow);font-size:22px;font-weight:900;color:#4b2d1b}
 .kv{display:grid;grid-template-columns:1fr auto;gap:8px}
-code.inline{background:#fff;border:var(--bd);padding:2px 6px;border-radius:8px}
-@media(min-width:720px){.container{max-width:920px;margin:0 auto}}
 </style>
 </head>
 <body>
-
 <header class="appbar">
-  <b>🦆 BadDuck Family Manager</b>
+  <b>🦆 BadDuck family — Live</b>
   <div>
-    <button class="icon" id="exportBtn" title="สำรองข้อมูล">📤</button>
-    <button class="icon" id="importBtn" title="กู้คืนข้อมูล">📥</button>
-    <button class="icon" id="resetBtn" title="รีเซ็ตข้อมูล">↺</button>
+    <span id="me" class="small">ตรวจสอบสถานะ…</span>
+    <button id="loginBtn" class="btn btn-soft">Login Discord</button>
+    <button id="logoutBtn" class="btn btn-danger" style="display:none">Logout</button>
   </div>
 </header>
 
 <main class="container">
-  <!-- Dashboard -->
-  <section id="v-dash" class="view active">
-    <div class="card">
-      <div class="h">ภาพรวม</div>
-      <div class="row grid2">
-        <div class="card">
-          <div class="small">สมาชิกทั้งหมด</div>
-          <div id="statMembers" style="font-size:1.6rem;font-weight:800">0</div>
-        </div>
-        <div class="card">
-          <div class="small">คงเหลือกองกลาง</div>
-          <div id="statBalance" style="font-size:1.6rem;font-weight:800">฿ 0</div>
-        </div>
-      </div>
-      <div class="small">รอบส่งเงินปัจจุบัน: <span id="currentPeriod"></span> · ค่าปรับขาดกิจกรรม: <span id="fineAbsent"></span>฿</div>
-    </div>
+  <nav class="tabs">
+    <button data-target="v-members" class="active">สมาชิก</button>
+    <button data-target="v-items">ไอเทม</button>
+    <button data-target="v-acts">กิจกรรม/เช็คชื่อ</button>
+    <button data-target="v-fines">ค่าปรับ</button>
+    <button data-target="v-fin">การเงิน</button>
+    <button data-target="v-leave">ลา</button>
+    <button data-target="v-reports">รายงาน</button>
+  </nav>
 
+  <!-- MEMBERS -->
+  <section id="v-members" class="view active">
     <div class="card">
-      <div class="h">กิจกรรมถัดไป</div>
-      <ul class="list" id="nextActs"></ul>
-    </div>
-  </section>
-
-  <!-- Members -->
-  <section id="v-members" class="view">
-    <div class="card">
-      <div class="h">สมาชิก</div>
-      <div class="row grid2">
-        <input id="mName" placeholder="ชื่อ">
-        <select id="mHouse">
-          <option value="">บ้าน (ไม่ระบุ)</option>
-          <option>บ้าน A</option><option>บ้าน B</option><option>บ้าน C</option>
-        </select>
-      </div>
-      <div class="row grid2">
-        <input id="mDiscord" placeholder="Discord ID (ไม่บังคับ)">
+      <div class="h">เพิ่มสมาชิก</div>
+      <div class="row g2">
+        <input id="mName" placeholder="ชื่อแสดงผล">
         <select id="mRole"><option value="member">สมาชิก</option><option value="leader">หัวหน้าบ้าน</option><option value="admin">แอดมิน</option></select>
+      </div>
+      <div class="row g2">
+        <input id="mHouse" placeholder="บ้าน (บ้าน A/B/...)">
+        <input id="mDiscord" placeholder="Discord ID (ถ้ามี)">
       </div>
       <button class="btn btn-primary" id="addMember">เพิ่มสมาชิก</button>
     </div>
-
     <div class="card">
-      <div class="kv"><div class="h">รายชื่อ</div><div class="small"><span class="badge" id="memberCount">0</span></div></div>
+      <div class="kv"><div class="h">รายชื่อ</div><div class="small" id="memberCount"></div></div>
       <ul class="list" id="memberList"></ul>
     </div>
   </section>
 
-  <!-- Activities -->
+  <!-- ITEMS -->
+  <section id="v-items" class="view">
+    <div class="card">
+      <div class="h">เพิ่มไอเทม</div>
+      <div class="row g2">
+        <input id="iName" placeholder="ชื่อไอเทม">
+        <input id="iQty" type="number" placeholder="จำนวน">
+      </div>
+      <div class="row g2">
+        <input id="iCat" placeholder="หมวดหมู่">
+        <select id="iCond"><option value="new">ใหม่</option><option value="good">ดี</option><option value="used">ผ่านใช้</option><option value="broken">ชำรุด</option></select>
+      </div>
+      <div class="row g2">
+        <select id="iOwner"></select>
+        <input id="iNote" placeholder="โน้ต">
+      </div>
+      <button class="btn btn-primary" id="addItem">เพิ่มไอเทม</button>
+    </div>
+    <div class="card">
+      <div class="h">คลังไอเทม</div>
+      <ul class="list" id="itemList"></ul>
+    </div>
+  </section>
+
+  <!-- ACTIVITIES + ATTENDANCE -->
   <section id="v-acts" class="view">
     <div class="card">
       <div class="h">สร้างกิจกรรม</div>
-      <div class="row grid2">
+      <div class="row g2">
         <input id="aName" placeholder="ชื่อกิจกรรม">
-        <input id="aTime" type="datetime-local">
+        <input id="aStart" type="datetime-local">
       </div>
-      <label class="small"><input type="checkbox" id="aRequired" checked> บังคับเข้าร่วม (ไม่มาโดนปรับ)</label>
+      <div class="row g2">
+        <input id="aEnd" type="datetime-local" placeholder="เวลาเลิก (ถ้ามี)">
+        <select id="aRequired"><option value="true">บังคับเข้าร่วม</option><option value="false">ไม่บังคับ</option></select>
+      </div>
+      <input id="aPenalty" type="number" placeholder="ค่าปรับขาด (฿) เช่น 50">
       <button class="btn btn-primary" id="addAct">เพิ่มกิจกรรม</button>
     </div>
-
     <div class="card">
-      <div class="h">รายการ + เช็คชื่อ</div>
+      <div class="h">รายการกิจกรรม + เช็คชื่อ</div>
       <ul class="list" id="actList"></ul>
     </div>
   </section>
 
-  <!-- Finance -->
-  <section id="v-fin" class="view">
+  <!-- FINES -->
+  <section id="v-fines" class="view">
     <div class="card">
-      <div class="h">บันทึกรายการเงิน</div>
-      <div class="row grid2">
-        <input id="fDesc" placeholder="รายละเอียด (เช่น ค่าบ้าน / บริจาค)">
-        <input id="fAmount" type="number" step="0.01" placeholder="จำนวน (+/-)">
-      </div>
-      <select id="fMember"></select>
-      <button class="btn btn-primary" id="addFin">บันทึก</button>
-    </div>
-
-    <div class="card">
-      <div class="kv"><div class="h">รายการ</div><div class="small">คงเหลือ: <b id="finBalance">฿ 0</b></div></div>
-      <ul class="list" id="finList"></ul>
+      <div class="h">ค่าปรับ (เปิด/ปิด)</div>
+      <ul class="list" id="fineList"></ul>
     </div>
   </section>
 
-  <!-- Leave -->
+  <!-- FINANCE -->
+  <section id="v-fin" class="view">
+    <div class="card">
+      <div class="h">บันทึกรายการเงิน</div>
+      <div class="row g2">
+        <input id="fDesc" placeholder="รายละเอียด (ค่าบ้าน/บริจาค/ค่าใช้จ่าย)">
+        <input id="fAmount" type="number" step="0.01" placeholder="จำนวน (+/-)">
+      </div>
+      <div class="row g2">
+        <select id="fUser"></select>
+        <input id="fPeriod" placeholder="รอบ (YYYY-MM)">
+      </div>
+      <button class="btn btn-primary" id="addFin">บันทึก</button>
+    </div>
+    <div class="card">
+      <div class="kv"><div class="h">เล่มบัญชี</div><div class="small">คงเหลือ: <b id="finBalance">฿ 0</b></div></div>
+      <ul class="list" id="ledgerList"></ul>
+    </div>
+  </section>
+
+  <!-- LEAVES -->
   <section id="v-leave" class="view">
     <div class="card">
-      <div class="h">ขออนุญาตลา</div>
-      <select id="lMember"></select>
-      <div class="row"><textarea id="lReason" rows="3" placeholder="เหตุผลการลา"></textarea></div>
+      <div class="h">คำขอลา</div>
+      <div class="row g2">
+        <select id="lUser"></select>
+        <input id="lReason" placeholder="เหตุผลการลา">
+      </div>
+      <div class="row g2">
+        <input id="lFrom" type="datetime-local">
+        <input id="lTo" type="datetime-local">
+      </div>
       <button class="btn btn-primary" id="addLeave">ส่งคำขอ</button>
     </div>
-
     <div class="card">
       <div class="h">ประวัติคำขอ</div>
       <ul class="list" id="leaveList"></ul>
     </div>
   </section>
 
-  <!-- Settings -->
-  <section id="v-settings" class="view">
+  <!-- REPORTS -->
+  <section id="v-reports" class="view">
     <div class="card">
-      <div class="h">ตั้งค่าระบบ</div>
-      <div class="row grid2">
-        <div><div class="small">รอบส่งเงิน (YYYY-MM)</div><input id="sPeriod" placeholder="2025-10"></div>
-        <div><div class="small">ค่าปรับขาดกิจกรรม/ครั้ง (฿)</div><input id="sFineAbsent" type="number" value="50"></div>
-      </div>
-      <button class="btn btn-primary" id="saveSettings">บันทึกการตั้งค่า</button>
-      <div class="small">หมายเหตุ: รุ่นนี้เป็นสแตติก เก็บข้อมูลในเครื่องผ่าน <code class="inline">localStorage</code></div>
+      <div class="h">รายงานย่อ</div>
+      <div id="reportBox" class="small">กำลังโหลด…</div>
     </div>
   </section>
 </main>
 
-<!-- Bottom Tabs -->
-<nav class="tabs" role="tablist">
-  <button data-target="v-dash" class="active">ภาพรวม</button>
-  <button data-target="v-members">สมาชิก</button>
-  <button data-target="v-acts">กิจกรรม</button>
-  <button data-target="v-fin">การเงิน</button>
-  <button data-target="v-leave">ลา</button>
-  <button data-target="v-settings">ตั้งค่า</button>
-</nav>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-<button class="fab" id="quickAdd" title="เพิ่มเร็ว">＋</button>
+/** ====== ตั้งค่าของคุณ ====== **/
+const SUPABASE_URL  = "https://kscmbueyiyirajmrkaoc.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+/** ============================ **/
 
-<script>
-/* ===== Simple store (localStorage) ===== */
-const empty = { members:[], acts:[], attend:[], ledger:[], leaves:[], settings:{ period:ym(), fineAbsent:50 } };
-let db = load();
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: true } });
 
-function load(){ try{ return JSON.parse(localStorage.getItem('bd_gang')) || structuredClone(empty);}catch(e){return structuredClone(empty);} }
-function save(){ localStorage.setItem('bd_gang', JSON.stringify(db)); renderAll(); }
-
-/* ===== Helpers ===== */
-function ym(d=new Date()){ return d.toISOString().slice(0,7); }
-const $ = s=>document.querySelector(s);
-const $$ = s=>document.querySelectorAll(s);
-
-/* ===== Tabs ===== */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
 $$('.tabs button').forEach(btn=>{
   btn.onclick=()=>{ $$('.tabs button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
-    $$('.view').forEach(v=>v.classList.remove('active')); $('#'+btn.dataset.target).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
-  };
+    $$('.view').forEach(v=>v.classList.remove('active')); $('#'+btn.dataset.target).classList.add('active'); };
 });
 
-/* ===== Actions: Members ===== */
-$('#addMember').onclick=()=>{
-  const name=$('#mName').value.trim(); const house=$('#mHouse').value; const discord=$('#mDiscord').value.trim(); const role=$('#mRole').value;
-  if(!name) return alert('กรอกชื่อสมาชิก');
-  const id=crypto.randomUUID();
-  db.members.push({id,name,house,discord,role,createdAt:Date.now()});
-  $('#mName').value=''; $('#mDiscord').value=''; save();
+$('#loginBtn').onclick = async () => {
+  const { error } = await sb.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: location.origin }});
+  if (error) alert(error.message);
 };
-function removeMember(id){
-  if(!confirm('ลบสมาชิกนี้?')) return;
-  db.members=db.members.filter(m=>m.id!==id);
-  db.ledger=db.ledger.filter(x=>x.userId!==id);
-  db.attend=db.attend.filter(x=>x.userId!==id);
-  db.leaves=db.leaves.filter(x=>x.userId!==id);
-  save();
-}
+$('#logoutBtn').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
-/* ===== Activities & Attendance ===== */
-$('#addAct').onclick=()=>{
-  const name=$('#aName').value.trim(); const ts=$('#aTime').value; const req=$('#aRequired').checked;
-  if(!name||!ts) return alert('กรอกชื่อและเวลา');
-  const id=crypto.randomUUID();
-  db.acts.push({id,name,at:ts,required:req});
-  $('#aName').value=''; $('#aTime').value=''; save();
-};
-function markAttendance(actId,userId,status){
-  const key = db.attend.find(a=>a.actId===actId && a.userId===userId);
-  if(key){ key.status=status; } else { db.attend.push({id:crypto.randomUUID(),actId,userId,status,at:Date.now()}); }
-  // Auto fine on ABSENT if required
-  const act=db.acts.find(a=>a.id===actId);
-  if(status==='absent' && act?.required){
-    const amount=Number(db.settings.fineAbsent||50);
-    db.ledger.push({id:crypto.randomUUID(),type:'fine',userId,amount:-Math.abs(amount),memo:`ค่าปรับไม่เข้าร่วม ${act.name}`,at:Date.now()});
+sb.auth.onAuthStateChange(async (_evt, session) => {
+  if (session?.user) {
+    $('#me').textContent = session.user.user_metadata?.name || session.user.email || 'Logged in';
+    $('#loginBtn').style.display = 'none';
+    $('#logoutBtn').style.display = 'inline-block';
+    await Promise.all([loadMembers(), loadItems(), loadActs(), loadFines(), loadLedger(), loadLeaves()]);
+    fillMemberSelects();
+    subscribeRealtime();
+    renderReports();
+  } else {
+    $('#me').textContent = 'ยังไม่ได้ล็อกอิน';
+    $('#loginBtn').style.display = 'inline-block';
+    $('#logoutBtn').style.display = 'none';
   }
-  save();
+});
+
+/* ===== MEMBERS ===== */
+let _members = [];
+async function loadMembers(){
+  const { data, error } = await sb.from('users').select('*').order('created_at',{ascending:true});
+  if (error) return alert(error.message);
+  _members = data||[];
+  $('#memberCount').textContent = `${_members.length} คน`;
+  $('#memberList').innerHTML = _members.map(m=>`
+    <li class="item">
+      <div><b>${m.username||'-'}</b><div class="small">${m.role}${m.house_id?' · '+(m.house_id):''}${m.discord_id?' · DC:'+m.discord_id:''}</div></div>
+      <div><button class="btn btn-danger" onclick="window.__delMember('${m.id}')">ลบ</button></div>
+    </li>`).join('') || '<div class="small">ยังไม่มีสมาชิก</div>';
+}
+async function addMember(){
+  const username = $('#mName').value.trim();
+  const role = $('#mRole').value;
+  const house = $('#mHouse').value.trim()||null;
+  const discord_id = $('#mDiscord').value.trim()||null;
+  if(!username) return alert('กรอกชื่อ');
+  const { error } = await sb.from('users').insert({ username, role, house_id: null, discord_id });
+  if (error) alert(error.message);
+  $('#mName').value=''; $('#mHouse').value=''; $('#mDiscord').value='';
+}
+async function delMember(id){
+  if(!confirm('ลบสมาชิกนี้?')) return;
+  const { error } = await sb.from('users').delete().eq('id', id);
+  if (error) alert(error.message);
+}
+$('#addMember').onclick = addMember;
+window.__delMember = delMember;
+
+function fillMemberSelects(){
+  const opts = _members.map(m=>`<option value="${m.id}">${m.username}</option>`).join('');
+  $('#iOwner').innerHTML = `<option value="">คลังกลาง</option>` + opts;
+  $('#fUser').innerHTML  = `<option value="">(ไม่ระบุ)</option>` + opts;
+  $('#lUser').innerHTML  = opts;
 }
 
-/* ===== Finance ===== */
-$('#addFin').onclick=()=>{
-  const desc=$('#fDesc').value.trim(); const amt=parseFloat($('#fAmount').value); const uid=$('#fMember').value||null;
-  if(!desc || isNaN(amt)) return alert('กรอกรายการและจำนวน');
-  db.ledger.push({id:crypto.randomUUID(),type:amt>=0?'income':'expense',userId:uid,amount:amt,memo:desc,at:Date.now(),period:db.settings.period});
-  $('#fDesc').value=''; $('#fAmount').value=''; save();
-};
-
-/* ===== Leave ===== */
-$('#addLeave').onclick=()=>{
-  const uid=$('#lMember').value; const reason=$('#lReason').value.trim();
-  if(!uid||!reason) return alert('เลือกสมาชิกและใส่เหตุผล');
-  db.leaves.push({id:crypto.randomUUID(),userId:uid,reason,status:'pending',at:Date.now()});
-  $('#lReason').value=''; save();
-};
-
-/* ===== Settings ===== */
-$('#saveSettings').onclick=()=>{
-  db.settings.period=$('#sPeriod').value||ym();
-  db.settings.fineAbsent=Number($('#sFineAbsent').value||50);
-  save();
-};
-
-/* ===== Export / Import / Reset ===== */
-$('#exportBtn').onclick=()=>{
-  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='badduck_backup.json'; a.click();
-};
-$('#importBtn').onclick=async()=>{
-  const i=document.createElement('input'); i.type='file'; i.accept='application/json';
-  i.onchange=async()=>{ const f=i.files[0]; if(!f) return;
-    const t=await f.text(); try{ db=JSON.parse(t); save(); alert('กู้คืนข้อมูลแล้ว'); }catch(e){ alert('ไฟล์ไม่ถูกต้อง'); }
-  }; i.click();
-};
-$('#resetBtn').onclick=()=>{
-  if(confirm('รีเซ็ตข้อมูลทั้งหมด?')){ db=structuredClone(empty); save(); }
-};
-
-/* ===== Render ===== */
-function renderMembers(){
-  $('#memberCount').textContent=db.members.length;
-  const list=db.members.map(m=>`<li class="item"><div><b>${m.name}</b><div class="small">${m.house||'—'} · ${m.role}${m.discord?` · DC:${m.discord}`:''}</div></div><div><button class="btn btn-soft" onclick="removeMember('${m.id}')">ลบ</button></div></li>`).join('') || '<div class="small">ยังไม่มีสมาชิก</div>';
-  $('#memberList').innerHTML=list;
-  // selects
-  const opts = '<option value="">(ไม่ระบุ)</option>'+ db.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
-  $('#fMember').innerHTML=opts; $('#lMember').innerHTML=opts;
+/* ===== ITEMS ===== */
+let _items = [];
+async function loadItems(){
+  const { data, error } = await sb.from('items').select('*').order('created_at',{ascending:true});
+  if (error) return alert(error.message);
+  _items = data||[];
+  renderItems();
 }
-function renderActs(){
-  const byTime=[...db.acts].sort((a,b)=>a.at.localeCompare(b.at));
-  $('#actList').innerHTML = byTime.map(a=>{
-    const rows=db.members.map(m=>{
-      const rec=db.attend.find(x=>x.actId===a.id && x.userId===m.id)?.status||'-';
-      const chip = rec==='present' ? 'ok' : rec==='late' ? 'warn' : rec==='absent' ? 'danger' : '';
-      return `<div class="item"><div>${m.name}</div><div class="small"><span class="badge ${chip}">${rec}</span></div>
+async function addItem(){
+  const payload = {
+    name: $('#iName').value.trim(),
+    qty: parseInt($('#iQty').value||'0',10),
+    cat: $('#iCat').value.trim()||null,
+    cond: $('#iCond').value,
+    owner_id: $('#iOwner').value||null,
+    note: $('#iNote').value.trim()||null
+  };
+  if(!payload.name || !payload.qty || payload.qty<1) return alert('ชื่อ/จำนวนไม่ถูกต้อง');
+  const { error } = await sb.from('items').insert(payload);
+  if (error) alert(error.message);
+  $('#iName').value=''; $('#iQty').value=''; $('#iCat').value=''; $('#iNote').value='';
+}
+async function delItem(id){
+  if(!confirm('ลบไอเทมนี้?')) return;
+  const { error } = await sb.from('items').delete().eq('id',id);
+  if (error) alert(error.message);
+}
+async function transferItem(id){
+  const it = _items.find(x=>x.id===id); if(!it) return;
+  const pick = prompt('โอนให้ (พิมพ์ชื่อให้ตรง) หรือพิมพ์ "คลังกลาง"', it.owner_id ? (_members.find(m=>m.id===it.owner_id)?.username||'คลังกลาง'):'คลังกลาง');
+  if(pick===null) return;
+  let owner_id = null;
+  if(pick!=='คลังกลาง'){
+    const m=_members.find(x=>x.username===pick);
+    if(!m) return alert('ไม่พบบุคคลนี้');
+    owner_id = m.id;
+  }
+  const { error } = await sb.from('items').update({ owner_id }).eq('id', id);
+  if (error) alert(error.message);
+}
+$('#addItem').onclick = addItem;
+
+function renderItems(){
+  $('#itemList').innerHTML = _items.map(it=>{
+    const owner = it.owner_id ? (_members.find(m=>m.id===it.owner_id)?.username || '—') : 'คลังกลาง';
+    return `<li class="item">
+      <div><b>${it.name}</b> <span class="badge">${it.cond}</span>
+        <div class="small">หมวด: ${it.cat||'-'} · จำนวน: ${it.qty} · เจ้าของ: ${owner}</div>
+        ${it.note?`<div class="small">โน้ต: ${it.note}</div>`:''}
+      </div>
       <div>
-        <button class="btn btn-soft" onclick="markAttendance('${a.id}','${m.id}','present')">มา</button>
-        <button class="btn btn-soft" onclick="markAttendance('${a.id}','${m.id}','late')">สาย</button>
-        <button class="btn btn-soft" onclick="markAttendance('${a.id}','${m.id}','absent')">ขาด</button>
-      </div></div>`;
-    }).join('');
-    return `<li class="card"><div class="kv"><div><b>${a.name}</b><div class="small">${a.at.replace('T',' ')}</div></div><div>${a.required?'<span class="badge warn">บังคับ</span>':''}</div></div>${rows}</li>`;
-  }).join('') || '<div class="small">ยังไม่มีกิจกรรม</div>';
+        <button class="btn btn-soft" onclick="window.__transferItem('${it.id}')">โอน</button>
+        <button class="btn btn-danger" onclick="window.__delItem('${it.id}')">ลบ</button>
+      </div>
+    </li>`;
+  }).join('') || '<div class="small">ยังไม่มีไอเทม</div>';
+}
+window.__delItem = delItem;
+window.__transferItem = transferItem;
 
-  // next on dashboard
-  $('#nextActs').innerHTML = byTime.slice(0,3).map(a=>`<li class="item"><div><b>${a.name}</b><div class="small">${a.at.replace('T',' ')}</div></div><div>${a.required?'<span class="badge warn">บังคับ</span>':''}</div></li>`).join('') || '<div class="small">—</div>';
+/* ===== ACTIVITIES & ATTENDANCE ===== */
+let _acts = [];
+let _att = []; // ดึงเฉพาะตอน render
+
+async function loadActs(){
+  const { data, error } = await sb.from('activities').select('*').order('starts_at',{ascending:true});
+  if (error) return alert(error.message);
+  _acts = data||[];
+  await renderActs();
 }
-function renderFinance(){
-  const rows = db.ledger.map(x=>{
-    const sign = x.amount>=0? 'ok':'danger';
-    const who = x.userId ? (db.members.find(m=>m.id===x.userId)?.name || '—') : '—';
-    return `<li class="item"><div><b>${x.memo}</b><div class="small">${new Date(x.at).toLocaleString()} · ${who}</div></div><div class="badge ${sign}">${x.amount>=0?'+':''}${x.amount}</div></li>`;
+async function addAct(){
+  const name=$('#aName').value.trim();
+  const starts=$('#aStart').value; const ends=$('#aEnd').value || null;
+  const required = $('#aRequired').value === 'true';
+  const penalty = parseInt($('#aPenalty').value||'50',10);
+  if(!name || !starts) return alert('กรอกชื่อและเวลาเริ่ม');
+  const { error } = await sb.from('activities').insert({ name, starts_at: starts, ends_at: ends, required, penalty_amount: penalty });
+  if (error) alert(error.message);
+  $('#aName').value=''; $('#aStart').value=''; $('#aEnd').value=''; $('#aPenalty').value='';
+}
+$('#addAct').onclick = addAct;
+
+async function setAttend(activity_id, user_id, status){
+  const exists = await sb.from('attendance').select('id').eq('activity_id',activity_id).eq('user_id',user_id).maybeSingle();
+  if (exists.data?.id) {
+    await sb.from('attendance').update({ status }).eq('id', exists.data.id);
+  } else {
+    await sb.from('attendance').insert({ activity_id, user_id, status });
+  }
+}
+
+async function renderActs(){
+  // โหลด attendance เฉพาะสำหรับกิจกรรมที่มี
+  const ids = _acts.map(a=>a.id);
+  if (ids.length){
+    const { data } = await sb.from('attendance').select('*').in('activity_id', ids);
+    _att = data||[];
+  } else { _att = []; }
+
+  $('#actList').innerHTML = _acts.map(a=>{
+    const rows = _members.map(m=>{
+      const rec = _att.find(x=>x.activity_id===a.id && x.user_id===m.id)?.status || '-';
+      const chip = rec==='present'?'ok':rec==='late'?'warn':rec==='absent'?'danger':'';
+      return `<div class="item">
+        <div>${m.username}</div>
+        <div class="small"><span class="badge ${chip}">${rec}</span></div>
+        <div>
+          <button class="btn btn-soft" onclick="window.__att('${a.id}','${m.id}','present')">มา</button>
+          <button class="btn btn-soft" onclick="window.__att('${a.id}','${m.id}','late')">สาย</button>
+          <button class="btn btn-soft" onclick="window.__att('${a.id}','${m.id}','absent')">ขาด</button>
+        </div>
+      </div>`;
+    }).join('');
+    const req = a.required ? '<span class="badge">บังคับ</span>' : '';
+    return `<li class="card"><div class="kv"><div><b>${a.name}</b><div class="small">${a.starts_at?.replace('T',' ')||''}</div></div><div>${req} · ปรับ ${a.penalty_amount}฿</div></div>${rows}</li>`;
+  }).join('') || '<div class="small">ยังไม่มีกิจกรรม</div>';
+}
+window.__att = setAttend;
+
+/* ===== FINES ===== */
+let _fines = [];
+async function loadFines(){
+  const { data, error } = await sb.from('fines').select('*').order('created_at',{ascending:false});
+  if (error) return alert(error.message);
+  _fines = data||[];
+  renderFines();
+}
+async function settleFine(id){
+  if(!confirm('ปิดค่าปรับนี้?')) return;
+  const { error } = await sb.from('fines').update({ status:'settled', settled_at: new Date().toISOString() }).eq('id',id);
+  if (error) alert(error.message);
+  // เขียน ledger ฝั่ง client (สามารถย้ายไป trigger ฝั่ง DB ได้ภายหลัง)
+  const f = _fines.find(x=>x.id===id);
+  if (f) { await sb.from('ledger').insert({ type:'payment', ref_table:'fines', ref_id:id, user_id:f.user_id, amount: Math.abs(f.amount), memo:'ชำระค่าปรับ' }); }
+}
+function renderFines(){
+  $('#fineList').innerHTML = _fines.map(f=>{
+    const u = _members.find(m=>m.id===f.user_id)?.username || '—';
+    const st = f.status==='open' ? '<span class="badge">OPEN</span>' : '<span class="badge">SETTLED</span>';
+    return `<li class="item">
+      <div><b>${u}</b> <div class="small">ปรับ: ${f.amount}฿ · ${new Date(f.created_at).toLocaleString()}</div></div>
+      <div>${st} ${f.status==='open'?`<button class="btn btn-primary" onclick="window.__settle('${f.id}')">ปิดปรับ</button>`:''}</div>
+    </li>`;
+  }).join('') || '<div class="small">ยังไม่มีค่าปรับ</div>';
+}
+window.__settle = settleFine;
+
+/* ===== FINANCE / LEDGER ===== */
+let _ledger = [];
+async function loadLedger(){
+  const { data, error } = await sb.from('ledger').select('*').order('at',{ascending:false});
+  if (error) return alert(error.message);
+  _ledger = data||[];
+  renderLedger();
+}
+async function addFin(){
+  const memo=$('#fDesc').value.trim();
+  const amt=parseFloat($('#fAmount').value);
+  const user_id=$('#fUser').value||null;
+  const period=$('#fPeriod').value||null;
+  if(!memo || isNaN(amt)) return alert('รายการ/จำนวนไม่ถูกต้อง');
+  const type = amt>=0 ? 'income' : 'expense';
+  const { error } = await sb.from('ledger').insert({ type, ref_table:null, ref_id:null, user_id, amount:amt, memo, at:new Date().toISOString() });
+  if (error) alert(error.message);
+  $('#fDesc').value=''; $('#fAmount').value=''; $('#fPeriod').value='';
+}
+$('#addFin').onclick = addFin;
+
+function renderLedger(){
+  const rows = _ledger.map(x=>{
+    const who = x.user_id ? (_members.find(m=>m.id===x.user_id)?.username || '—') : '—';
+    const sign = Number(x.amount)>=0 ? '+' : '';
+    return `<li class="item"><div><b>${x.memo}</b><div class="small">${new Date(x.at).toLocaleString()} · ${who}</div></div><div class="badge">${sign}${x.amount}</div></li>`;
   }).join('') || '<div class="small">ยังไม่มีรายการ</div>';
-  $('#finList').innerHTML=rows;
-  const bal = db.ledger.reduce((s,x)=>s+Number(x.amount||0),0);
-  $('#finBalance').textContent='฿ '+bal.toFixed(2);
-  $('#statBalance').textContent='฿ '+bal.toFixed(2);
+  $('#ledgerList').innerHTML = rows;
+  const bal = _ledger.reduce((s,x)=>s+Number(x.amount||0),0);
+  $('#finBalance').textContent = '฿ '+bal.toFixed(2);
 }
+
+/* ===== LEAVES ===== */
+let _leaves = [];
+async function loadLeaves(){
+  const { data, error } = await sb.from('leave_requests').select('*').order('created_at',{ascending:false});
+  if (error) return alert(error.message);
+  _leaves = data||[];
+  renderLeaves();
+}
+async function addLeave(){
+  const user_id=$('#lUser').value; const reason=$('#lReason').value.trim();
+  const from_at=$('#lFrom').value||null; const to_at=$('#lTo').value||null;
+  if(!user_id||!reason) return alert('เลือกสมาชิกและเหตุผล');
+  const { error } = await sb.from('leave_requests').insert({ user_id, reason, from_at, to_at });
+  if (error) alert(error.message);
+  $('#lReason').value=''; $('#lFrom').value=''; $('#lTo').value='';
+}
+$('#addLeave').onclick = addLeave;
+
 function renderLeaves(){
-  $('#leaveList').innerHTML = db.leaves.map(l=>{
-    const name=db.members.find(m=>m.id===l.userId)?.name||'—';
-    return `<li class="item"><div><b>${name}</b><div class="small">${l.reason}</div></div><div class="badge">${l.status}</div></li>`;
+  $('#leaveList').innerHTML = _leaves.map(l=>{
+    const name=_members.find(m=>m.id===l.user_id)?.username || '—';
+    return `<li class="item"><div><b>${name}</b><div class="small">${l.reason} ${l.from_at?(' · '+l.from_at):''}${l.to_at?(' → '+l.to_at):''}</div></div><div class="badge">${l.status}</div></li>`;
   }).join('') || '<div class="small">ยังไม่มีคำขอ</div>';
 }
-function renderSettings(){
-  $('#sPeriod').value=db.settings.period||ym();
-  $('#sFineAbsent').value=db.settings.fineAbsent||50;
-  $('#currentPeriod').textContent=db.settings.period||ym();
-  $('#fineAbsent').textContent=db.settings.fineAbsent||50;
-}
-function renderAll(){ renderMembers(); renderActs(); renderFinance(); renderLeaves(); renderSettings(); $('#statMembers').textContent=db.members.length; }
-renderAll();
 
-/* ===== Quick Add FAB: เปิดหน้าเพิ่มสมาชิก/กิจกรรมตามแท็บ ===== */
-$('#quickAdd').onclick=()=>{
-  if($('#v-members').classList.contains('active')) $('#mName').focus();
-  else if($('#v-acts').classList.contains('active')) $('#aName').focus();
-  else if($('#v-fin').classList.contains('active')) $('#fDesc').focus();
-  else if($('#v-leave').classList.contains('active')) $('#lReason').focus();
-  else { $$('.tabs button')[1].click(); $('#mName').focus(); }
-};
+/* ===== REPORTS (ย่อ) ===== */
+async function renderReports(){
+  const openFines = _fines.filter(f=>f.status==='open').length;
+  const byHouse = {}; _members.forEach(m=>{ byHouse[m.house_id||'อื่นๆ']=(byHouse[m.house_id||'อื่นๆ']||0)+1; });
+  $('#reportBox').innerHTML = `
+    - สมาชิกทั้งหมด: <b>${_members.length}</b><br>
+    - ค่าปรับที่ยังเปิด: <b>${openFines}</b> รายการ<br>
+    - สมาชิกตามบ้าน: <b>${Object.entries(byHouse).map(([k,v])=>`${k}:${v}`).join(', ')}</b>
+  `;
+}
+
+/* ===== REALTIME ===== */
+function subscribeRealtime(){
+  sb.channel('live-sync')
+    .on('postgres_changes',{ event:'*', schema:'public', table:'users' }, async()=>{ await loadMembers(); fillMemberSelects(); renderReports(); })
+    .on('postgres_changes',{ event:'*', schema:'public', table:'items' }, async()=>{ await loadItems(); })
+    .on('postgres_changes',{ event:'*', schema:'public', table:'activities' }, async()=>{ await loadActs(); })
+    .on('postgres_changes',{ event:'*', schema:'public', table:'attendance' }, async()=>{ await loadActs(); await loadFines(); renderReports(); })
+    .on('postgres_changes',{ event:'*', schema:'public', table:'fines' }, async()=>{ await loadFines(); await loadLedger(); renderReports(); })
+    .on('postgres_changes',{ event:'*', schema:'public', table:'ledger' }, async()=>{ await loadLedger(); })
+    .on('postgres_changes',{ event:'*', schema:'public', table:'leave_requests' }, async()=>{ await loadLeaves(); })
+    .subscribe();
+}
+
+/* ===== Wire buttons (after auth) ===== */
+$('#addItem').disabled = false;
 </script>
 </body>
 </html>
